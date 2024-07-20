@@ -1,16 +1,14 @@
-require("dotenv").config({
-  path: `.env.${process.env.NODE_ENV || "development"}`,
-});
+const config = require("../config/mailConfig");
 const fs = require("fs");
 const path = require("path");
 const handlebars = require("handlebars");
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: process.env.MAIL_SERVICE,
+  service: config.service,
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
+    user: config.user,
+    pass: config.pass,
   },
 });
 
@@ -25,7 +23,7 @@ const sendMailService = async (name, subject, email, message) => {
     const mailOptions = {
       from: '"Portfolio" <' + email + ">",
       replyTo: email,
-      to: process.env.MAIL_USER,
+      to: config.user,
       subject: subject,
       text: message,
       html: htmlToSend,
@@ -42,7 +40,7 @@ const sendMailService = async (name, subject, email, message) => {
     const replacementsResend = { name, subject, message };
     const htmlToResend = templateResend(replacementsResend);
     await transporter.sendMail({
-      from: process.env.MAIL_USER,
+      from: config.user,
       to: email,
       subject: "Gracias por contactarte conmigo!",
       text: "Estaré revisando tu mensaje y te responderé a la brevedad.",

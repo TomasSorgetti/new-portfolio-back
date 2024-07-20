@@ -1,9 +1,18 @@
+const signUp = async (req, res, next) => {
+  try {
+    const payload = "Sign Up";
+    res.status(200).json(payload);
+  } catch (error) {
+    next(error);
+  }
+};
+const signIn = async (req, res, next) => {
+  try {
+    const payload = "Sign In";
+    res.status(200).json(payload);
+  } catch (error) {
+    next(error);
+  }
+};
 
-const signUp = (req, res) => { 
-    res.send("Sign Up")
-}
-const signIn = (req, res) => { 
-    res.send("Sign In")
-}
-
-module.exports = { signUp, signIn }
+module.exports = { signUp, signIn };

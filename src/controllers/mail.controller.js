@@ -1,6 +1,6 @@
 const service = require("../services/mail.service");
 
-const sendMail = async (req, res) => {
+const sendMail = async (req, res, next) => {
   const { name, subject, email, message } = req.body;
 
   try {
@@ -12,7 +12,7 @@ const sendMail = async (req, res) => {
     );
     res.status(200).json(payload);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 

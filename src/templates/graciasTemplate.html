@@ -18,25 +18,27 @@
         border-radius: 5px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
-      .header {
-        background-color: #007bff;
-        color: #fff;
-        padding: 10px;
-        text-align: center;
-        border-radius: 5px 5px 0 0;
+      .header img {
+        width: 100%;
       }
       .content {
         padding: 20px;
+      }
+      span {
+        font-weight: 600;
+      }
+      .footer {
+        text-align: center;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h1>{{subject}}</h1>
+        <img src="./assets/email.png" alt="info header" />
       </div>
       <div class="content">
-        <p>Hola! soy Tomás Sorgetti,</p>
+        <p>Hola! soy <span>Tomás Sorgetti,</span></p>
         <p>Estaré revisando tu mensaje y te responderé a la brevedad.</p>
       </div>
       <div class="footer">
