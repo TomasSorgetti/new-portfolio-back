@@ -14,30 +14,45 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendMailService = (name, subject, email, message) => {
-  // Leer el template HTML
-  const filePath = path.join(__dirname, "emailTemplate.html");
-  const source = fs.readFileSync(filePath, "utf-8").toString();
+const sendMailService = async (name, subject, email, message) => {
+  try {
+    const filePath = path.join(__dirname, "../templates/emailTemplate.html");
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+    const replacements = { name, subject, message };
+    const htmlToSend = template(replacements);
 
-  // Compilar el template
-  const template = handlebars.compile(source);
-  const replacements = { name, subject, message };
-  const htmlToSend = template(replacements);
+    const mailOptions = {
+      from: '"Portfolio" <' + email + ">",
+      replyTo: email,
+      to: process.env.MAIL_USER,
+      subject: subject,
+      text: message,
+      html: htmlToSend,
+    };
 
-  const mailOptions = {
-    from: email,
-    replyTo: email,
-    to: process.env.MAIL_USER,
-    subject: subject,
-    text: message,
-    html: htmlToSend,
-  };
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      throw new Error(error.message);
-    }
-    return info.response;
-  });
+    await transporter.sendMail(mailOptions);
+
+    const filePathResend = path.join(
+      __dirname,
+      "../templates/graciasTemplate.html"
+    );
+    const sourceResend = fs.readFileSync(filePathResend, "utf-8").toString();
+    const templateResend = handlebars.compile(sourceResend);
+    const replacementsResend = { name, subject, message };
+    const htmlToResend = templateResend(replacementsResend);
+    await transporter.sendMail({
+      from: process.env.MAIL_USER,
+      to: email,
+      subject: "Gracias por contactarte conmigo!",
+      text: "Estaré revisando tu mensaje y te responderé a la brevedad.",
+      html: htmlToResend,
+    });
+
+    return { message: "Correo enviado exitosamente" };
+  } catch (error) {
+    throw new Error("Error al enviar el correo: " + error.message);
+  }
 };
 
 module.exports = { sendMailService };
