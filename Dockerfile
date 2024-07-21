@@ -13,5 +13,8 @@ RUN npm install
 # Copia el contenido de src al directorio de trabajo en el contenedor
 COPY src ./src
 
+# Expone el puerto en el que la app escuchará
+EXPOSE 8000
+
 # Define el comando por defecto para ejecutar la aplicación
 CMD ["npm", "run", "start:dev"]

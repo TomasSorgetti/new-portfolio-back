@@ -1,21 +1,20 @@
-require("dotenv").config({
-  path: `.env.${process.env.NODE_ENV || "development"}`,
-});
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const router = require("./routes/router");
-const { dbConfig } = require("./config/config");
-const mysql = require("mysql2/promise");
+const config = require("./config/config");
+const db = require("./models/index.db");
 
 const server = express();
-const port = process.env.PORT || 5000;
+const port = config.port || 8000;
 
+// Middlewares
 server.use(cors());
 server.use(morgan("dev"));
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
+// Routes
 server.use("/api", router);
 server.use("/api/health", (req, res) => res.sendStatus(200));
 
@@ -29,28 +28,17 @@ server.use((err, req, res, next) => {
   });
 });
 
-async function initializeDatabase() {
-  let connection;
-  for (let i = 0; i < 10; i++) {
-    try {
-      connection = await mysql.createConnection(dbConfig);
-      console.log("Connected to MySQL");
-      break;
-    } catch (err) {
-      console.error("Error connecting to MySQL, retrying...", err);
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-    }
-  }
-  if (!connection) {
-    console.error("Failed to connect to MySQL after several attempts");
+
+db.sequelize
+  .sync({ force: false })
+  .then(() => {
+    server.listen(port, () => {
+      console.log(`- - - - - - - - - - - - - - -`);
+      console.log(`Server listening on port ${port}`);
+      console.log(`- - - - - - - - - - - - - - -`);
+    });
+  })
+  .catch((err) => {
+    console.error("Unable to connect to the database:", err);
     process.exit(1);
-  }
-}
-
-initializeDatabase();
-
-server.listen(port, () => {
-  console.log(`- - - - - - - - - - - - - - -`);
-  console.log(`Server listening on port ${port}`);
-  console.log(`- - - - - - - - - - - - - - -`);
-});
+  });
