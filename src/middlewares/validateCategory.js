@@ -27,7 +27,7 @@ const validateTechnology = async (req, res, next) => {
   }
   if (req.method === "PUT") {
     const existingCategory = await models.category.findOne({
-      where: { name },
+      where: { id },
     });
     if (!existingCategory) {
       return next(new HttpError(400, "Category does not exists"));
