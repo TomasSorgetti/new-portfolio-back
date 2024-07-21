@@ -1,14 +1,14 @@
-const config = require("../config/mailConfig");
+const config = require("../config/config");
 const fs = require("fs");
 const path = require("path");
 const handlebars = require("handlebars");
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: config.service,
+  service: config.mailConfig.service,
   auth: {
-    user: config.user,
-    pass: config.pass,
+    user: config.mailConfig.user,
+    pass: config.mailConfig.pass,
   },
 });
 
@@ -23,7 +23,7 @@ const sendMailService = async (name, subject, email, message) => {
     const mailOptions = {
       from: '"Portfolio" <' + email + ">",
       replyTo: email,
-      to: config.user,
+      to: config.mailConfig.user,
       subject: subject,
       text: message,
       html: htmlToSend,
@@ -40,7 +40,7 @@ const sendMailService = async (name, subject, email, message) => {
     const replacementsResend = { name, subject, message };
     const htmlToResend = templateResend(replacementsResend);
     await transporter.sendMail({
-      from: config.user,
+      from: config.mailConfig.user,
       to: email,
       subject: "Gracias por contactarte conmigo!",
       text: "Estaré revisando tu mensaje y te responderé a la brevedad.",
