@@ -3,7 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const router = require("./routes/router");
 const config = require("./config/config");
-const { conn } = require("./models/index.db");
+const { models } = require("./models/index.db");
 
 const server = express();
 const port = config.port || 8000;
@@ -28,7 +28,7 @@ server.use((err, req, res, next) => {
   });
 });
 
-conn.sequelize
+models.sequelize
   .sync({ force: false })
   .then(() => {
     server.listen(port, () => {

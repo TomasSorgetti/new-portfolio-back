@@ -11,6 +11,8 @@ const models = {};
 models.Sequelize = Sequelize;
 models.sequelize = sequelize;
 
-// models.user = require("./user.model.js")(sequelize, Sequelize);
+models.user = require("./user.model.js")(sequelize, Sequelize);
+models.technology = require("./technologies.model.js")(sequelize, Sequelize);
+models.category = require("./categories.model.js")(sequelize, Sequelize);
 
-module.exports = { conn: models };
+module.exports = { models };
