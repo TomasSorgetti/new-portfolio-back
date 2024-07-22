@@ -2,32 +2,64 @@ version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-    container_name: server-app-1
+    build: .
+    container_name: portfolio
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_HOST=${DB_HOST}
+      - DATABASE_PORT=${DB_PORT}
+      - DATABASE_USER=${DB_USER}
+      - DATABASE_PASSWORD=${DB_PASSWORD}
+      - DATABASE_NAME=${DB_NAME}
     depends_on:
-      - mysql
-    environment:
-      DB_NAME: new_portfolio
-      DB_USER: root
-      DB_PASSWORD: portfolio
-      DB_HOST: mysql
-      DB_PORT: 3306
+      - db
 
-  mysql:
-    image: mysql:8.0
-    container_name: server-mysql-1
-    environment:
-      MYSQL_ROOT_PASSWORD: portfolio
-      MYSQL_DATABASE: new_portfolio
-      MYSQL_USER: root
-      MYSQL_PASSWORD: portfolio
+  db:
+    image: postgres:15
+    container_name: portfolio_db
     ports:
-      - "3306:3306"
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
-      - mysql-data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  mysql-data:
+  postgres_data:
+
+# version: '3.8'
+
+# services:
+#   app:
+#     build:
+#       context: .
+#     container_name: server-app-1
+#     ports:
+#       - "8000:8000"
+#     depends_on:
+#       - mysql
+#     environment:
+#       DB_NAME: new_portfolio
+#       DB_USER: root
+#       DB_PASSWORD: portfolio
+#       DB_HOST: mysql
+#       DB_PORT: 3306
+
+#   mysql:
+#     image: mysql:8.0
+#     container_name: server-mysql-1
+#     environment:
+#       MYSQL_ROOT_PASSWORD: portfolio
+#       MYSQL_DATABASE: new_portfolio
+#       MYSQL_USER: root
+#       MYSQL_PASSWORD: portfolio
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - mysql-data:/var/lib/mysql
+
+# volumes:
+#   mysql-data:

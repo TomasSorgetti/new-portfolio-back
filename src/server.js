@@ -22,7 +22,7 @@ server.use("/api/health", (req, res) => res.sendStatus(200));
 server.use((err, req, res, next) => {
   const statusCode = err.status || 500;
   res.status(statusCode).json({
-    error: "Something went wrong",
+    error: true,
     status: statusCode,
     message: err.message,
   });
