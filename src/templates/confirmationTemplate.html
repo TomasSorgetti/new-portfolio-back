@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      a {
+        background-color: #080516;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Confirmá la cuenta</h1>
+      </div>
+      <div class="content">
+        <p>
+          Has intentado crearte una cuenta con el siguiente email: {{email}}
+          para la dashboard del Portfolio de Tomás Sorgetti
+        </p>
+        <p>Tu código de verificacion es:</p>
+        <span>{{code}}</span>
+      </div>
+    </div>
+  </body>
+</html>

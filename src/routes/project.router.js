@@ -1,10 +1,9 @@
-const { Router } = require("express")
-const controller = require("../controllers/project.controller")
-
+const { Router } = require("express");
+const controller = require("../controllers/project.controller");
 
 const projectRouter = Router();
 
-projectRouter.post("/", controller.createProject)
+//! ToDO - Add Admin Middleware
+projectRouter.post("/", controller.createProject);
 
-
-module.exports = projectRouter
+module.exports = projectRouter;

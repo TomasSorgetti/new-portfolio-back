@@ -5,18 +5,17 @@ const categoriesRouter = Router();
 
 categoriesRouter.get("/", controller.getCategoriesController);
 
+//! ToDO - Add Admin Middleware
 categoriesRouter.post(
   "/",
   validateTechnology,
   controller.createCategoriesController
 );
-
 categoriesRouter.put(
   "/:id",
   validateTechnology,
   controller.updateCategoriesController
 );
-
 categoriesRouter.delete(
   "/:id",
   validateTechnology,

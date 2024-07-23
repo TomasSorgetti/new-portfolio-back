@@ -10,5 +10,9 @@ authRouter.post(
   controller.signUp
 );
 authRouter.post("/signin", controller.signIn);
+authRouter.put("/confirm", controller.confirmUser);
+
+//! ToDO - Add Admin Middleware
+authRouter.put("/confirm-admin", controller.confirmUserAdmin);
 
 module.exports = authRouter;

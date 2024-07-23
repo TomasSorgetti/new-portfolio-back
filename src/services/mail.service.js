@@ -3,6 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const handlebars = require("handlebars");
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+const { models } = require("../models/index.db");
 
 const transporter = nodemailer.createTransport({
   service: config.mailConfig.service,
@@ -10,8 +12,12 @@ const transporter = nodemailer.createTransport({
     user: config.mailConfig.user,
     pass: config.mailConfig.pass,
   },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
+//! Send the Email from Form /
 const sendMailService = async (name, subject, email, message) => {
   try {
     const filePath = path.join(__dirname, "../templates/emailTemplate.html");
@@ -53,4 +59,74 @@ const sendMailService = async (name, subject, email, message) => {
   }
 };
 
-module.exports = { sendMailService };
+//! Send the Confirmation Email /
+const sendConfirmationMail = async (email, code) => {
+  const filePath = path.join(
+    __dirname,
+    "../templates/confirmationTemplate.html"
+  );
+  const source = fs.readFileSync(filePath, "utf-8").toString();
+  const template = handlebars.compile(source);
+  const replacements = { email, code };
+  const htmlToSend = template(replacements);
+
+  const mailOptions = {
+    from: config.mailConfig.user,
+    to: email,
+    subject: "Confirm your email address",
+    html: htmlToSend,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      throw new Error("Error sending confirmation email: " + error.message);
+    }
+    console.log("Email sent: " + info.response);
+  });
+};
+
+//! Admin Notification Email /
+const sendConfirmationAdminMail = async (email, userId) => {
+  try {
+    const filePath = path.join(
+      __dirname,
+      "../templates/adminNotificationTemplate.html"
+    );
+    const source = fs.readFileSync(filePath, "utf-8").toString();
+    const template = handlebars.compile(source);
+
+    const approvalToken = jwt.sign({ userId }, config.secret, {
+      expiresIn: "7d",
+    });
+    const approvalLink = `${config.apiUrl}/mail/approve-registration?token=${approvalToken}`;
+
+    const replacements = { email, approvalLink };
+    const htmlToSend = template(replacements);
+
+    const mailOptions = {
+      from: config.mailConfig.user,
+      to: config.adminEmail,
+      subject: "New User Registration Awaiting Approval",
+      html: htmlToSend,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        throw new Error("Error sending confirmation email: " + error.message);
+      }
+      console.log("Email sent: " + info.response);
+    });
+
+    return { message: "Notification email sent to admin successfully" };
+  } catch (error) {
+    throw new Error(
+      "Error sending notification email to admin: " + error.message
+    );
+  }
+};
+
+module.exports = {
+  sendMailService,
+  sendConfirmationMail,
+  sendConfirmationAdminMail,
+};

@@ -6,6 +6,17 @@ module.exports = (sequelize, Sequelize) => {
     password: {
       type: Sequelize.STRING,
     },
+    verifyCode: {
+      type: Sequelize.INTEGER,
+    },
+    userVerified: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
+    adminVerified: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
   });
 
   return User;

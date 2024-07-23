@@ -1,5 +1,6 @@
 const service = require("../services/mail.service");
 
+//**** */ Send Mail from Form
 const sendMail = async (req, res, next) => {
   const { name, subject, email, message } = req.body;
 
@@ -16,4 +17,6 @@ const sendMail = async (req, res, next) => {
   }
 };
 
-module.exports = { sendMail };
+module.exports = {
+  sendMail,
+};
