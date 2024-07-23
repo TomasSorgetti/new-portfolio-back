@@ -86,7 +86,7 @@ const sendConfirmationMail = async (email, code) => {
 };
 
 //! Admin Notification Email /
-const sendConfirmationAdminMail = async (email, userId) => {
+const sendConfirmationAdminMail = async (email) => {
   try {
     const filePath = path.join(
       __dirname,
@@ -94,13 +94,9 @@ const sendConfirmationAdminMail = async (email, userId) => {
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
+;
 
-    const approvalToken = jwt.sign({ userId }, config.secret, {
-      expiresIn: "7d",
-    });
-    const approvalLink = `${config.apiUrl}/mail/approve-registration?token=${approvalToken}`;
-
-    const replacements = { email, approvalLink };
+    const replacements = { email };
     const htmlToSend = template(replacements);
 
     const mailOptions = {

@@ -42,6 +42,7 @@ const signUpService = async (email, password) => {
     if (!owner) {
       throw new HttpError(400, "Error creating owner user");
     }
+    return { error: false, message: "Owner user created successfully" };
   }
 
   //! user registration
@@ -54,10 +55,10 @@ const signUpService = async (email, password) => {
   }
   const code = Math.floor(100000 + Math.random() * 900000);
   user.verifyCode = code;
-  user.save();
+  await user.save();
 
   await mailService.sendConfirmationMail(email, code);
-  await mailService.sendConfirmationAdminMail(hashedEmail);
+  await mailService.sendConfirmationAdminMail(email);
 
   return { error: false, message: "User created successfully" };
 };
@@ -70,7 +71,7 @@ const confirmUserService = async (email, code) => {
 
   user.userVerified = true;
   user.verifyCode = null;
-  user.save();
+  await user.save();
 
   return { error: false, message: "User verified successfully" };
 };
@@ -81,7 +82,7 @@ const confirmUserAdminService = async (email) => {
   if (!user) throw new HttpError(400, "Wrong email");
 
   user.adminVerified = true;
-  user.save();
+  await user.save();
 
   return { error: false, message: "User verified successfully" };
 };

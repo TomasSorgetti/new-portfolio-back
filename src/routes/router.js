@@ -5,6 +5,7 @@ const authRouter = require("./auth.router");
 const mailRouter = require("./mail.router");
 const categoriesRouter = require("./categories.router");
 const technologiesRouter = require("./technologies.router");
+const aboutRouter = require("./about.router");
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use("/projects", projectRouter);
 router.use("/categories", categoriesRouter);
 router.use("/technologies", technologiesRouter);
 router.use("/mail", mailRouter);
+router.use("/about", aboutRouter);
 
 module.exports = router;

@@ -1,7 +1,12 @@
+const HttpError = require("../errors/HttpError");
 const { models } = require("../models/index.db");
 
 const getAllTechnologies = async () => {
-  return await models.technology.findAll();
+  const technologies = await models.technology.findAll();
+  if (technologies.length > 0) {
+    return { error: false, message: "Technologies found", technologies };
+  }
+  throw new HttpError(404, "Technologies not found or does not exists");
 };
 
 const createTechnology = async (name) => {
