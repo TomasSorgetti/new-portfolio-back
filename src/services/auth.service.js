@@ -1,6 +1,6 @@
 const {
   secret,
-  apiUrl,
+  refreshSecret,
   adminEmail,
   adminPassword,
 } = require("../config/config");
@@ -23,10 +23,14 @@ const signInService = async (email, password) => {
 
   // Generar token JWT
   const token = jwt.sign({ id: user.id }, secret, {
-    expiresIn: "1d",
+    expiresIn: "15m",
   });
 
-  return { error: false, message: "Login successfully", token };
+  const refreshToken = jwt.sign({ id: user.id }, refreshSecret, {
+    expiresIn: "7d",
+  });
+
+  return { token, refreshToken };
 };
 
 const signUpService = async (email, password) => {
@@ -63,6 +67,23 @@ const signUpService = async (email, password) => {
   return { error: false, message: "User created successfully" };
 };
 
+//! Refresh Token
+const refreshTokenService = async (refreshToken) => {
+  if (!refreshToken) throw new HttpError(401, "No token provided");
+
+  jwt.verify(refreshToken, refreshSecret, (err, user) => {
+    if (err) return res.sendStatus(403);
+
+    const newAccessToken = jwt.sign({ id: user.id }, secret, { expiresIn: '15m' });
+    const newRefreshToken = jwt.sign({ id: user.id }, refreshSecret, { expiresIn: '7d' });
+
+   return { token: newAccessToken, refreshToken: newRefreshToken };
+  });
+
+}
+
+
+//! TODO Eliminar estas rutas y simplemente que el admin cree el usuario desde la dashboard
 const confirmUserService = async (email, code) => {
   const user = await models.user.findOne({
     where: { email, code },
@@ -90,6 +111,7 @@ const confirmUserAdminService = async (email) => {
 module.exports = {
   signUpService,
   signInService,
+  refreshTokenService,
   confirmUserService,
   confirmUserAdminService,
 };

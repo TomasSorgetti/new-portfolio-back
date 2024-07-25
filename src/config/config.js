@@ -25,6 +25,7 @@ const mailConfig = {
 
 const port = process.env.PORT || 8000;
 const secret = process.env.SECRET;
+const refreshSecret = process.env.REFRESH_SECRET;
 const apiUrl = process.env.API_URL;
 const adminEmail = process.env.ADMIN_EMAIL;
 const adminPassword = process.env.ADMIN_PASSWORD;

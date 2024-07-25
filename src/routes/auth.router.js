@@ -9,7 +9,11 @@ authRouter.post(
   validation.validateUserValues,
   controller.signUp
 );
+
 authRouter.post("/signin", controller.signIn);
+
+authRouter.post("/refresh-token", controller.refreshTokenController);
+
 authRouter.put("/confirm", controller.confirmUser);
 
 //! ToDO - Add Admin Middleware
