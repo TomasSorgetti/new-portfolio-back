@@ -9,23 +9,33 @@ const signUp = async (req, res, next) => {
     next(error);
   }
 };
+
 const signIn = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const tokens = await services.signInService(email, password)
-    res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true });
-    res.status(200).json({ error: false, message: "Login successfully", token: tokens.token };);
+    res.cookie('refreshToken', tokens.refreshToken, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production', // Usa HTTPS en producción
+  sameSite: 'strict' // O 'lax', según tus necesidades
+});
+
+    res.status(200).json({ error: false, message: "Login successfully", token: tokens.token })
   } catch (error) {
     next(error);
   }
 };
 const refreshTokenController = async (req, res, next) => {
-  const { refreshToken } = req.body;
+  const { refreshToken } = req.cookie
 
   try {
     const tokens = await services.refreshTokenService(refreshToken)
-    res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true });
-    res.status(200).json({ error: false, message: "Refresh successfully", token: tokens.token };);
+    res.cookie('refreshToken', tokens.refreshToken, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production', // Usa HTTPS en producción
+  sameSite: 'strict' // O 'lax', según tus necesidades
+});
+    res.status(200).json({ error: false, message: "Refresh successfully", token: tokens.token });
   } catch (error) {
     next(error);
   }

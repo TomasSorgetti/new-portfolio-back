@@ -22,11 +22,11 @@ const signInService = async (email, password) => {
   if (!match) throw new HttpError(400, "Invalid password");
 
   // Generar token JWT
-  const token = jwt.sign({ id: user.id }, secret, {
+  const token = jwt.sign({ id: user.id, email: user.email }, secret, {
     expiresIn: "15m",
   });
 
-  const refreshToken = jwt.sign({ id: user.id }, refreshSecret, {
+  const refreshToken = jwt.sign({ id: user.id, email: user.email }, refreshSecret, {
     expiresIn: "7d",
   });
 
@@ -50,6 +50,7 @@ const signUpService = async (email, password) => {
   }
 
   //! user registration
+  //? Debería de eliminar la opcion de crear usuario y que el admin las cree.
   const user = await models.user.create({
     email,
     password: hashedPassword,
@@ -74,8 +75,8 @@ const refreshTokenService = async (refreshToken) => {
   jwt.verify(refreshToken, refreshSecret, (err, user) => {
     if (err) return res.sendStatus(403);
 
-    const newAccessToken = jwt.sign({ id: user.id }, secret, { expiresIn: '15m' });
-    const newRefreshToken = jwt.sign({ id: user.id }, refreshSecret, { expiresIn: '7d' });
+    const newAccessToken = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '15m' });
+    const newRefreshToken = jwt.sign({ id: user.id, email: user.email }, refreshSecret, { expiresIn: '7d' });
 
    return { token: newAccessToken, refreshToken: newRefreshToken };
   });

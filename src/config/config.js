@@ -35,6 +35,7 @@ module.exports = {
   mailConfig,
   port,
   secret,
+  refreshSecret,
   apiUrl,
   adminEmail,
   adminPassword,
