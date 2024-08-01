@@ -1,4 +1,5 @@
 const services = require("../services/auth.service");
+const { serialize } = require('cookie')
 
 const signUp = async (req, res, next) => {
   const { email, password } = req.body;
@@ -14,11 +15,16 @@ const signIn = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const tokens = await services.signInService(email, password)
-    res.cookie('refreshToken', tokens.refreshToken, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // Usa HTTPS en producción
-  sameSite: 'strict' // O 'lax', según tus necesidades
-});
+
+    const serialized = serialize('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      secure: false, // Usa HTTPS en producción
+      sameSite: 'lax', // O 'lax', segun tus necesidades
+      maxAge: 60 * 60 * 24 * 30
+      
+    })
+    
+    res.setHeader('Set-Cookie', serialized); 
 
     res.status(200).json({ error: false, message: "Login successfully", token: tokens.token })
   } catch (error) {
