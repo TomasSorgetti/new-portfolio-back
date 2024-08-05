@@ -6,6 +6,8 @@ const router = require("./routes/router");
 const config = require("./config/config");
 const { models } = require("./models/index.db");
 const cookieParser = require('cookie-parser');
+const path = require('path');
+
 
 const server = express();
 const port = config.port || 8000;
@@ -52,6 +54,10 @@ server.use(morgan("dev"));
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(cookieParser());
+
+// Configura el directorio de archivos estáticos
+server.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // Routes
 server.use("/api", router);
 server.use("/api/health", (req, res) => res.sendStatus(200));
