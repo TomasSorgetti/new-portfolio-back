@@ -21,7 +21,7 @@ const getProjectByIdController = async (req, res, next) => {
 const createProjectController = async (req, res, next) => {
   const { title, description, url, technologyIds, categoryIds } = req.body;
   const image = req.file ? req.file.filename : null;
-  console.log(title, description, url, image);
+
   try {
     const payload = await service.createProjectService(
       title,

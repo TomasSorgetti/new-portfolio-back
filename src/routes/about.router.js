@@ -5,7 +5,7 @@ const middlewares = require("../middlewares/authToken");
 const aboutRouter = Router();
 
 aboutRouter.get("/", controllers.getAboutController);
-aboutRouter.post("/", middlewares.authToken, controllers.createAboutController);
-aboutRouter.put("/", middlewares.authToken, controllers.updateAboutController);
+aboutRouter.post("/", controllers.createAboutController);
+aboutRouter.put("/", controllers.updateAboutController);
 
 module.exports = aboutRouter;
