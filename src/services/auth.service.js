@@ -11,31 +11,35 @@ const jwt = require("jsonwebtoken");
 const mailService = require("./mail.service");
 
 const signInService = async (email, password) => {
-  // Verificar si el usuario existe
+  //* Verificar si el usuario existe
   const user = await models.user.findOne({
     where: { email, userVerified: true, adminVerified: true },
   });
   if (!user) throw new HttpError(400, "User do not exist");
 
-  // Verificar la contraseña
+  //* Verificar la contraseña
   const match = await bcrypt.compare(password, user.password);
   if (!match) throw new HttpError(400, "Invalid password");
 
-  // Generar token JWT
+  //* Generar token JWT
   const token = jwt.sign({ id: user.id, email: user.email }, secret, {
     expiresIn: "15m",
   });
 
-  const refreshToken = jwt.sign({ id: user.id, email: user.email }, refreshSecret, {
-    expiresIn: "7d",
-  });
+  const refreshToken = jwt.sign(
+    { id: user.id, email: user.email },
+    refreshSecret,
+    {
+      expiresIn: "7d",
+    }
+  );
 
   return { token, refreshToken };
 };
 
 const signUpService = async (email, password) => {
   const hashedPassword = await bcrypt.hash(password, 10);
-  //! owner user
+  //* owner user
   if (email === adminEmail && password === adminPassword) {
     const owner = await models.user.create({
       email,
@@ -50,7 +54,7 @@ const signUpService = async (email, password) => {
   }
 
   //! user registration
-  //? Debería de eliminar la opcion de crear usuario y que el admin las cree.
+  //todo Debería de eliminar la opcion de crear usuario y que el admin las cree.
   const user = await models.user.create({
     email,
     password: hashedPassword,
@@ -75,16 +79,22 @@ const refreshTokenService = async (refreshToken) => {
   jwt.verify(refreshToken, refreshSecret, (err, user) => {
     if (err) return res.sendStatus(403);
 
-    const newAccessToken = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '15m' });
-    const newRefreshToken = jwt.sign({ id: user.id, email: user.email }, refreshSecret, { expiresIn: '7d' });
+    const newAccessToken = jwt.sign(
+      { id: user.id, email: user.email },
+      secret,
+      { expiresIn: "15m" }
+    );
+    const newRefreshToken = jwt.sign(
+      { id: user.id, email: user.email },
+      refreshSecret,
+      { expiresIn: "7d" }
+    );
 
-   return { token: newAccessToken, refreshToken: newRefreshToken };
+    return { token: newAccessToken, refreshToken: newRefreshToken };
   });
+};
 
-}
-
-
-//! TODO Eliminar estas rutas y simplemente que el admin cree el usuario desde la dashboard
+// TODO Eliminar estas rutas y simplemente que el admin cree el usuario desde la dashboard
 const confirmUserService = async (email, code) => {
   const user = await models.user.findOne({
     where: { email, code },

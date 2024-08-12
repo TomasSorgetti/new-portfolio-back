@@ -59,7 +59,8 @@ const sendMailService = async (name, subject, email, message) => {
   }
 };
 
-//! Send the Confirmation Email /
+//! Send the Confirmation Email
+
 const sendConfirmationMail = async (email, code) => {
   const filePath = path.join(
     __dirname,
@@ -94,8 +95,6 @@ const sendConfirmationAdminMail = async (email) => {
     );
     const source = fs.readFileSync(filePath, "utf-8").toString();
     const template = handlebars.compile(source);
-;
-
     const replacements = { email };
     const htmlToSend = template(replacements);
 

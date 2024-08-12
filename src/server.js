@@ -1,30 +1,31 @@
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const helmet = require('helmet');
+const helmet = require("helmet");
 const router = require("./routes/router");
 const config = require("./config/config");
 const { models } = require("./models/index.db");
-const cookieParser = require('cookie-parser');
-const path = require('path');
-
+const cookieParser = require("cookie-parser");
+const path = require("path");
+const rateLimit = require("express-rate-limit");
 
 const server = express();
 const port = config.port || 8000;
 
-// Middlewares
-server.use(cors(
-//   {
-//   origin: 'http://example.com', // Permitir solo solicitudes de este dominio
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Permitir solo estos métodos HTTP
-//   allowedHeaders: ['Content-Type'] // Permitir solo estos encabezados
-// }
-));
+//* Middlewares
+server.use(
+  cors()
+  //   {
+  //   origin: 'http://example.com', // Permitir solo solicitudes de este dominio
+  //   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Permitir solo estos métodos HTTP
+  //   allowedHeaders: ['Content-Type'] // Permitir solo estos encabezados
+  // }
+);
 
-// //! Security middlewares production
+// //* Security middlewares production
 // server.use(helmet.hidePoweredBy()); // para que no sepan que se utiliza express
 // server.use(helmet.noSniff()); // Evita que los navegadores intenten adivinar el tipo de contenido
-// server.use(helmet.frameguard({ action: 'deny' })); // Protege contra ataques de clickjacking configurando el encabezado X-Frame-Options. 
+// server.use(helmet.frameguard({ action: 'deny' })); // Protege contra ataques de clickjacking configurando el encabezado X-Frame-Options.
 // server.use(helmet.xssFilter()); // Habilita el filtro de XSS en navegadores compatibles.
 // server.use(helmet.hsts({
 //     maxAge: 31536000, // 1 año
@@ -46,23 +47,35 @@ server.use(cors(
 //     maxAge: 86400, // 1 día
 //     enforce: true
 // })); // Configura el encabezado Expect-CT para proteger contra ataques de falsificación de certificados.
-// //! End of Security middlewares production
+// //* End of Security middlewares production
 
-
+//* Rate Limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+  // store: ... , // Redis, Memcached, etc. See below.
+});
 
 server.use(morgan("dev"));
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(cookieParser());
 
-// Configura el directorio de archivos estáticos
-server.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+//* Configura el directorio de archivos estáticos
+//? Debería de limitar tambien los llamados a las imágenes?
+server.use(
+  "/uploads",
+  limiter,
+  express.static(path.join(__dirname, "../uploads"))
+);
 
-// Routes
-server.use("/api", router);
-server.use("/api/health", (req, res) => res.sendStatus(200));
+//* Routes
+server.use("/api", limiter, router);
+server.use("/api/health", limiter, (req, res) => res.sendStatus(200));
 
-// Middleware para manejar los errores
+//* Middleware para manejar los errores
 server.use((err, req, res, next) => {
   const statusCode = err.status || 500;
   res.status(statusCode).json({
